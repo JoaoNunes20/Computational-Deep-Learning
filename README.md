@@ -76,10 +76,3 @@ python train.py --model generator --epochs 50
 ```bash
 python generate.py --num_images 10
 ```
-
-## 🛠 Contributing
-Feel free to open issues or pull requests to improve the project. Contributions are welcome!
-
----
-
-Made with ❤️ by [Your Team Name]
