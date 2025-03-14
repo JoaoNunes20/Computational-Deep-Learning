@@ -33,39 +33,52 @@ For both models, we will:
 - Choose suitable **performance metrics**.
 - Continuously improve models based on intermediate results.
 
-## 📊 Evaluation Criteria
-The project will be graded based on:
-- Suitability of the model for the task.
-- Model correctness and complexity.
-- Iterative improvements and adjustments.
+## 📌 Repository Structure
+```
+📂 project-root
+│-- 📂 data/                # Dataset (not included in repo, use dataset link)
+│-- 📂 models/              # Model implementations
+│-- 📂 notebooks/           # Jupyter notebooks for experiments
+│-- 📂 src/                 # Source code for training and evaluation
+│-- 📂 results/             # Output results, logs, and model checkpoints
+│-- README.md               # Project overview
+│-- requirements.txt        # Dependencies
+│-- train.py                # Training script
+│-- generate.py             # Image generation script
+```
 
-## 🎖️ Bonus (Up to +1.5 Points)
-Extra points can be earned by implementing:
-- **Self-supervised learning**
-- **Uncertainty quantification**
-- **Federated learning**
+## 📦 Installation & Setup
+Clone this repository:
+```bash
+git clone https://github.com/your-repo/deepfake-detection.git
+cd deepfake-detection
+```
 
-## 📌 Submission Details
-**Deadline**: March 30th, 2025 (23:59:59) on Moodle.
+Create a virtual environment and install dependencies:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-### Required Deliverables:
-- **Code** (Notebook or script files) allowing full model training and result reproduction.
-- **Report** including:
-  - Overview of the deep learning approaches used.
-  - Step-by-step improvements and justifications.
-  - Classification and generation results with training details.
-  - Discussion and conclusions.
-- **Auto-evaluation file** detailing team contributions.
+## 🏃 Running the Project
+### Train the Classifier:
+```bash
+python train.py --model classifier --epochs 50
+```
 
-## 🎤 Presentation
-- **Dates**: April 4th and 11th, 2025.
-- **All team members must be present** and explain their contributions.
-- Lack of preparation may result in penalization.
+### Train the Generative Model:
+```bash
+python train.py --model generator --epochs 50
+```
 
-## ⚠️ Important Notes
-- The dataset files **must not** be included in the submission.
-- Groups must have **3 members** (exceptions need approval).
-- Late submissions will be penalized.
+### Generate Fake Images:
+```bash
+python generate.py --num_images 10
+```
+
+## 🛠 Contributing
+Feel free to open issues or pull requests to improve the project. Contributions are welcome!
 
 ---
 
