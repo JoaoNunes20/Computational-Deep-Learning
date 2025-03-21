@@ -15,5 +15,8 @@ unzip-dataset:
 generate-dataset-csv:
 	python ./scripts/explore_dataset.py
 
+train-test-split:
+	python ./scripts/train_test_split.py
+
 pip-install:
 	pip install -r requirements.txt
