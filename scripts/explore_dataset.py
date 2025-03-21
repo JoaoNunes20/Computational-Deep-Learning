@@ -60,19 +60,21 @@ dataset_df = create_dataset_df()
 dataset_df.head()
 # %%
 # plot the distribution of real and fake images
-dataset_df["label"].value_counts().plot(kind="bar")
+dataset_df["image_type"].value_counts().plot(kind="bar")
 # %%
-print(dataset_df["label"].value_counts())
+print(dataset_df["image_type"].value_counts())
 # %%
 # look at a few random images
 fig, axes = plt.subplots(4, 4, figsize=(15, 10))
 for i, ax in enumerate(axes.flat):
     image_path = dataset_df.sample()["image_path"].values[0]
-    label = dataset_df[dataset_df["image_path"] == image_path]["label"].values[0]
+    image_type = dataset_df[dataset_df["image_path"] == image_path][
+        "image_type"
+    ].values[0]
     image = Image.open(image_path)
     ax.imshow(image)
     ax.axis("off")
-    ax.set_title(f"Label: {label}")
+    ax.set_title(f"{image_type}")
 plt.show()
 # %%
 # save the dataset DataFrame to a csv file
