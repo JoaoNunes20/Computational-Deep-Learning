@@ -12,5 +12,8 @@ unzip-dataset:
 	unzip -o tmp/text2img.zip -d images/text2img
 	unzip -o tmp/wiki.zip -d images/wiki
 
+generate-dataset-csv:
+	python ./scripts/explore_dataset.py
+
 pip-install:
 	pip install -r requirements.txt
