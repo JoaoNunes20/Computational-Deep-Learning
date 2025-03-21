@@ -34,7 +34,8 @@ def create_dataset_df():
                     real_image_paths.append(os.path.join(root, file))
 
     real_image_df = pd.DataFrame(real_image_paths, columns=["image_path"])
-    real_image_df["label"] = "real"
+    real_image_df["image_type"] = "real"
+    real_image_df["label"] = 0
 
     # read fake image paths and store them in a DataFrame
     fake_image_paths = []
@@ -45,7 +46,8 @@ def create_dataset_df():
                     fake_image_paths.append(os.path.join(root, file))
 
     fake_image_df = pd.DataFrame(fake_image_paths, columns=["image_path"])
-    fake_image_df["label"] = "fake"
+    fake_image_df["image_type"] = "fake"
+    fake_image_df["label"] = 1
 
     # combine the real and fake image DataFrames
     return pd.concat([real_image_df, fake_image_df], ignore_index=True)
