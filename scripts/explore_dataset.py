@@ -63,6 +63,12 @@ dataset_df.head()
 dataset_df["image_type"].value_counts().plot(kind="bar")
 # %%
 print(dataset_df["image_type"].value_counts())
+
+# %%
+# print image dimensions
+for image_path in dataset_df["image_path"].sample(5):
+    image = Image.open(image_path)
+    print(image.size)
 # %%
 # look at a few random images
 fig, axes = plt.subplots(4, 4, figsize=(15, 10))
