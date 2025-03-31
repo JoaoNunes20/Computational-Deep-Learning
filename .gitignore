@@ -3,3 +3,7 @@ tmp/
 data/
 
 __pycache__/
+
+secrets/
+
+mlruns/
