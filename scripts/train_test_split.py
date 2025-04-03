@@ -3,6 +3,7 @@
 import argparse
 import os
 import shutil
+from uuid import uuid4
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -33,7 +34,10 @@ def move_images(image_list, label_list, split):
         class_name = "fake" if label == 1 else "real"
         dest_dir = os.path.join(target_root, split, class_name)
         os.makedirs(dest_dir, exist_ok=True)
-        shutil.copy(img_path, os.path.join(dest_dir, os.path.basename(img_path)))
+        shutil.copy(
+            img_path,
+            os.path.join(dest_dir, str(uuid4()) + "_" + os.path.basename(img_path)),
+        )
 
 
 def main(args):
