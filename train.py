@@ -5,7 +5,9 @@ import mlflow.pytorch
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader, Subset
+from sklearn.metrics import classification_report
+from sklearn.model_selection import StratifiedShuffleSplit
+from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from tqdm import tqdm
 
@@ -14,8 +16,18 @@ from models.baseline_classification_model import Baseline
 path_to_root = os.getcwd()
 
 
+# Helper function to sample stratified indices
+def stratified_subset_indices(dataset, sample_size):
+    targets = [label for _, label in dataset.imgs]
+    splitter = StratifiedShuffleSplit(
+        n_splits=1, test_size=sample_size, random_state=42
+    )
+    for _, subset_idx in splitter.split(X=targets, y=targets):
+        return subset_idx
+
+
 def train_classifier():
-    mlflow.set_experiment("cnn_training_experiment")
+    mlflow.set_experiment("cnn_training_experiment_take_2")
     epochs = 10
     learning_rate = 0.001
     batch_size = 32
@@ -28,7 +40,7 @@ def train_classifier():
 
         transform = transforms.Compose(
             [
-                transforms.Resize((512, 512)),
+                transforms.Resize((224, 224)),
                 transforms.ToTensor(),
                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
             ]
@@ -44,33 +56,23 @@ def train_classifier():
             transform=transform,
         )
 
-        # Randomly select indices for a small subset
-        train_sample_size = len(train_dataset) // 2
-        val_sample_size = len(val_dataset) // 2
-
-        # Get total number of samples in the dataset
-        train_total = len(train_dataset)
-        val_total = len(val_dataset)
-
-        # Randomly select indices for train and validation datasets
-        train_indices = torch.randint(
-            0, train_total, (train_sample_size,)
-        ).tolist()  # Random indices for train
-        val_indices = torch.randint(
-            0, val_total, (val_sample_size,)
-        ).tolist()  # Random indices for val
-
-        # Create subsets based on the randomly selected indices
-        train_dataset = Subset(train_dataset, train_indices)
-        val_dataset = Subset(val_dataset, val_indices)
-
         # Create data loaders
         train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
         val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
         # train the classifier's model
         model = Baseline()
-        criterion = nn.CrossEntropyLoss()  # For binary classification
+        # Count class frequencies
+        labels = sorted([label for _, label in train_dataset.imgs])
+        class_counts = torch.bincount(torch.tensor(labels))
+        real, fake = class_counts[0].item() / len(train_dataset.imgs), class_counts[
+            1
+        ].item() / len(train_dataset.imgs)
+        class_weights = torch.tensor([1.0 / real, 1.0 / fake], dtype=torch.float)
+        print(f"Class weights: {class_weights}")
+        criterion = nn.CrossEntropyLoss(
+            weight=class_weights
+        )  # For binary classification
         optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
         for epoch in range(epochs):
@@ -101,27 +103,33 @@ def train_classifier():
             )
 
             val_loss = 0
-            correct = 0
-            total = 0
+            y_true = []
+            y_pred = []
+
             with torch.no_grad():
                 for images, labels in val_loader_tqdm:
                     outputs = model(images)
                     loss = criterion(outputs, labels)
                     val_loss += loss.item()
                     _, predicted = torch.max(outputs.data, 1)
-                    total += labels.size(0)
-                    correct += (predicted == labels).sum().item()
-
+                    y_true.extend(labels.numpy())
+                    y_pred.extend(predicted.numpy())
                     val_loader_tqdm.set_postfix(loss=loss.item())
 
+            report = classification_report(
+                y_true, y_pred, target_names=val_dataset.classes, output_dict=True
+            )
+            # Log key metrics to MLflow
+            for label, metrics in report.items():
+                if isinstance(metrics, dict):
+                    for metric_name, value in metrics.items():
+                        mlflow.log_metric(f"{label}_{metric_name}", value, step=epoch)
+                else:
+                    mlflow.log_metric(f"{label}", metrics, step=epoch)
+
             avg_val_loss = val_loss / len(val_loader)
-            val_accuracy = 100 * correct / total
-
             mlflow.log_metric("val_loss", avg_val_loss, step=epoch)
-            mlflow.log_metric("val_accuracy", val_accuracy, step=epoch)
-
-            print(f"Validation Loss: {val_loss / len(val_loader)}")
-            print(f"Validation Accuracy: {100 * correct / total}%")
+            print(report)
             print("=====================================")
 
         model_path = "model.pth"
