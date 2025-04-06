@@ -1,0 +1,131 @@
+\documentclass[a4paper,11pt]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+% Title and Author
+\title{Deep Learning Project Report}
+\author{Your Name}
+\date{\today}
+
+% Document
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+Deep learning models have significantly advanced the capabilities of artificial intelligence, particularly in areas requiring image classification and synthesis. This project specifically addresses the context of deepfake detection and generation. The primary goal is two-fold: firstly, to develop discriminative models capable of effectively distinguishing real images from artificially generated ones, and secondly, to implement generative models able to create realistic synthetic images. The dataset employed for this purpose is the DeepFakeFace (DFF) dataset, comprising authentic celebrity images and synthetic counterparts generated through sophisticated deepfake algorithms such as Stable Diffusion and InsightFace. The objective extends beyond merely achieving robust classification and generation outcomes; it critically involves iterative experimentation and enhancement of models based on ongoing performance evaluations. This iterative process aims to not only optimize performance, but also provide meaningful insights into model behavior, limitations, and potential improvements.
+
+
+
+\section{Classification Solutions Considered}
+\subsection{CNN from Scartch}
+Briefly describe discriminative the models considered considered (e.g. CNNs, RNNs, Transformers, etc.).
+
+\subsection{ResNet50}
+Briefly describe the generative models considered (e.g., GANs, Variational Autoencoders, Diffusion Models, etc.).
+
+\subsection{vit\_b\_16}
+The ViT\_b\_16 model refers to the base version of the Vision Transformer architecture, which applies Transformer-based mechanisms—originally designed for natural language processing—to image data. Unlike traditional Convolutional Neural Networks (CNNs), Vision Transformers divide the input image into a sequence of fixed-size patches (in this case, 16×16 pixels), flatten them, and treat them as tokens in a sequence. Each patch is linearly embedded and combined with positional encodings to preserve spatial information before being processed by the Transformer encoder.
+
+\subsubsection*{model modification}                        
+The original ViT\_b\_16 model contains approximately 86.5 million parameters and was pre-trained on the ImageNet dataset with a classification head that outputs probabilities over 1,000 categories. These output classes correspond to specific ImageNet labels, which can be referenced [here](https://deeplearning.cms.waikato.ac.nz/user-guide/class-maps/IMAGENET/).
+
+However, our task involves binary classification (e.g., real vs. fake), so we adapted the model by replacing its original classification head. The modification was done as follows:
+
+\begin{itemize}
+    \item We identified the number of input features to the original classification head (typically 768).
+    \item The original 1,000-class output layer was removed.
+    \item A new sequential head was added:
+    \begin{itemize}
+        \item First, a linear layer was introduced to reduce the feature dimensionality from 768 to 256.
+        \item A ReLU activation function was applied to introduce non-linearity.
+        \item Finally, another linear layer was added to map the 256 features to 2 output neurons, corresponding to the binary classes.
+    \end{itemize}
+\end{itemize}
+
+This custom head allows the model to maintain its powerful feature extraction capabilities while being fine-tuned for our specific binary classification task.
+
+\subsubsection*{image transformation}
+
+\section{Implementation Steps and Motivations}
+\subsection{Discriminative Model}
+
+\subsubsection{Approach and Architecture}
+Describe the approach chosen and the architecture of your discriminative model. Motivate your choices clearly.
+
+\subsubsection{Training Strategy}
+Explain your training strategies, including optimizers, loss functions, regularization methods, and any other relevant choices.
+
+\subsection{ViT\_B\_16}
+
+\subsubsection{Parameter Tuning}
+As an initial approach, we defined a base training configuration and tested several modifications to evaluate the best hyperparameters before scaling to a larger training set.
+
+To systematically assess performance, we employed 3-fold stratified cross-validation and compared the results across different configurations:
+
+\begin{itemize}
+    \item \textbf{Configuration 1}: Description of configuration 1.
+    \item \textbf{Configuration 2}: Description of configuration 2.
+    \item \textbf{Configuration 3}: Description of configuration 3.
+\end{itemize}
+
+Among these, Configuration 3 performed best, and we used it to train the model on a larger dataset of 10,000 images.
+
+\subsubsection{Problem: Input Resolution}
+The final objective is to classify synthetic images generated by our generator. However, a challenge arises due to the input size requirements of the Vision Transformer (ViT): it requires images of at least 224$\times$224 pixels.
+
+Our image generator, due to hardware limitations, only produces 64$\times$64 pixel images. To address this mismatch, we consider the following solutions:
+
+\begin{itemize}
+    \item \textbf{Solution 1}: Duplicate the original 64$\times$64 image to create 9 identical copies, arrange them in a 3$\times$3 grid to form a 128$\times$128 image, upscale it to 256$\times$256, and then apply a center crop to obtain a 224$\times$224 image suitable for ViT input.
+    
+    \item \textbf{Solution 2}: Center-crop or resize the 64$\times$64 image and apply zero-padding to expand it to 224$\times$224 pixels, maintaining the image's original content in the center.
+\end{itemize}
+
+These methods allow us to adapt the low-resolution outputs from the generator for use with the ViT architecture.
+\subsubsection{Training Strategy}
+Explain training details, techniques for stabilization, loss functions, and any enhancements implemented.
+
+\section{Experimental Results}
+
+\subsection{Classification Performance (Discriminative Model)}
+Describe your experimental setup:
+\begin{itemize}
+    \item Train/validation/test splits
+    \item Hyperparameter tuning
+    \item Performance metrics (accuracy, precision, recall, F1-score, etc.)
+\end{itemize}
+
+Include relevant results (tables, figures, confusion matrices, etc.).
+
+\subsection{Data Generation Performance (Generative Model)}
+Describe your experimental setup:
+\begin{itemize}
+    \item Evaluation protocol
+    \item Performance metrics (FID scores, inception score, visual comparisons, etc.)
+\end{itemize}
+
+Present and discuss the results obtained.
+
+\section{Discussion and Conclusions}
+Comment on your results:
+\begin{itemize}
+    \item Interpretation of discriminative model performance
+    \item Interpretation of generative model performance
+    \item Limitations of your approach
+    \item Possible improvements or future work
+\end{itemize}
+
+Summarize your final remarks clearly.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
