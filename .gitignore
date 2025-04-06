@@ -1,1 +1,13 @@
 images/
+tmp/
+data/
+
+__pycache__/
+
+secrets/
+
+mlruns/
+
+colab_mlrun/
+*.zip
+*.csv
