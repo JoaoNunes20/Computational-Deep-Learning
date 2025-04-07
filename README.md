@@ -22,57 +22,7 @@ For further details, see: [Dataset Paper](https://arxiv.org/pdf/2309.02218)
 This project consists of implementing two models:
 
 1. **Classifier** - A deep learning model to distinguish between real and fake images.
-   - Possible approaches: MLP, CNN, Vision Transformers, etc.
+   - Possible approaches: CNN, Vision Transformers.
    
 2. **Generative Model** - A deep learning model to generate realistic fake images.
-   - Possible approaches: GANs, VAEs, Diffusion Models, etc.
-
-### ✅ Training Strategy & Evaluation
-For both models, we will:
-- Define appropriate **training strategies**.
-- Choose suitable **performance metrics**.
-- Continuously improve models based on intermediate results.
-
-## 📌 Repository Structure
-```
-📂 project-root
-│-- 📂 data/                # Dataset (not included in repo, use dataset link)
-│-- 📂 models/              # Model implementations
-│-- 📂 notebooks/           # Jupyter notebooks for experiments
-│-- 📂 src/                 # Source code for training and evaluation
-│-- 📂 results/             # Output results, logs, and model checkpoints
-│-- README.md               # Project overview
-│-- requirements.txt        # Dependencies
-│-- train.py                # Training script
-│-- generate.py             # Image generation script
-```
-
-## 📦 Installation & Setup
-Clone this repository:
-```bash
-git clone https://github.com/your-repo/deepfake-detection.git
-cd deepfake-detection
-```
-
-Create a virtual environment and install dependencies:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows use: venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-## 🏃 Running the Project
-### Train the Classifier:
-```bash
-python train.py --model classifier --epochs 50
-```
-
-### Train the Generative Model:
-```bash
-python train.py --model generator --epochs 50
-```
-
-### Generate Fake Images:
-```bash
-python generate.py --num_images 10
-```
+   - Approaches: DCGAN.
